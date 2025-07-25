@@ -131,7 +131,6 @@ def run_trainin_pipeline(df: pd.DataFrame, target_col: str, model_params: dict):
 
     return model, x_scaler_params, y_scaler_params, mse
 
-# --- Execute the pipeline for the Residential Data ---
 if __name__ == '__main__':
     residential_def = prepare_type_data()
 
