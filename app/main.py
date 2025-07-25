@@ -3,9 +3,6 @@ from pydantic import BaseModel
 import joblib 
 import numpy as np
 import traceback
-import numpy as np
-import matplotlib.pyplot as plt
-
 class LinearRegressionGD:
     def __init__(self, learning_rate=0.01, n_iterations=1000):
         self.learning_rate = learning_rate
