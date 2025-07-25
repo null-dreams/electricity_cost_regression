@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib 
 import numpy as np
+import sys
 import traceback
 class LinearRegressionGD:
     def __init__(self, learning_rate=0.01, n_iterations=1000):
@@ -46,7 +47,7 @@ class LinearRegressionGD:
             raise RuntimeError("Model has not been fitted yet")
         return X @ self.weights + self.bias
 
-
+setattr(sys.modules['__main__'], 'LinearRegressionGD', LinearRegressionGD)
 
 print("Loading applications artifacts...")
 ARTIFACTS = {}

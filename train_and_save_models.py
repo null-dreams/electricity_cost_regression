@@ -4,21 +4,62 @@ import matplotlib.pyplot as plt
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from LinearModel import LinearRegressionGD
 
-DATAPATH = 'dataset/electricity_cost_dataset.csv'
+class LinearRegressionGD:
+    def __init__(self, learning_rate=0.01, n_iterations=1000):
+        self.learning_rate = learning_rate
+        self.n_iterations = n_iterations
+        self.weights = None
+        self.bias = None
+        self.cost_history = []
+
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        y = y.reshape(-1, 1)
+
+        # 1. Initializing parameters
+        self.weights = np.zeros((n_features, 1))
+        self.bias = 0.0
+        self.cost_history = []
+
+        # 2. Gradient Descent
+        for i in range(self.n_iterations):
+            # Calculate predictions
+            y_pred = X @ self.weights + self.bias
+
+            # Calculating cost (MSE)
+            cost = (1 / (2 * n_samples)) * np.sum((y_pred - y) ** 2)
+            self.cost_history.append(cost)
+
+            # Calculating the gradients
+            dw = (1 / n_samples) * (X.T @ (y_pred - y))
+            db = (1 / n_samples) * np.sum(y_pred - y)
+
+            # Updating parameters
+            self.weights -= self.learning_rate * dw
+            self.bias -= self.learning_rate * db
+
+            # Printing cost periodically
+            if (i+1) % (self.n_iterations // 10) == 0 or i == 0: 
+                print(f"Iteration {i+1}/{self.n_iterations}, Cost: {cost:.4f}")
+
+    def predict(self, X, scaled=True):
+        if self.weights is None:
+            raise RuntimeError("Model has not been fitted yet")
+        return X @ self.weights + self.bias
+
+DATAPATH = 'app/dataset/electricity_cost_dataset.csv'
 TARGET_COL = 'electricity cost'
-filename = 'com'
-
+filename = 'res'
 
 def prepare_type_data(data_path=DATAPATH):
     df = pd.read_csv(data_path)
 
     # Global Cleaning
-    df = df.drop(['recycling rate', 'air qality index', 'issue reolution time', 'resident count'], axis=1, errors='ignore')
+    df = df.drop(['recycling rate', 'air qality index', 'issue reolution time'], axis=1, errors='ignore')
 
     # Filer for residential and clean up
-    res_df = df[df['structure type'] == 'Commercial'].copy()
+    res_df = df[df['structure type'] == 'Residential'].copy()
     res_df = res_df.drop('structure type', axis=1)
 
     print("Type Data Prepared. Features: ", res_df.columns.drop('electricity cost').tolist())
@@ -132,7 +173,7 @@ if __name__ == '__main__':
         'x_scaler_params': best_artifacts['x_scaler'],
         'y_scaler_params': best_artifacts['y_scaler']
     }
-    joblib.dump(best_artifacts['model'], f'models/{filename}_model.joblib')
-    joblib.dump(scaler_to_save, f'models/{filename}_scalers.joblib')
+    joblib.dump(best_artifacts['model'], f'app/models/{filename}_model.joblib')
+    joblib.dump(scaler_to_save, f'app/models/{filename}_scalers.joblib')
     print(f"Models are saved in the models directory")
 
