@@ -43,24 +43,3 @@ class LinearRegressionGD:
         if self.weights is None:
             raise RuntimeError("Model has not been fitted yet")
         return X @ self.weights + self.bias
-
-    def mse_score(self, y_true, y_pred):
-        return np.mean((y_true - y_pred)**2)
-    
-    def r2_score(self, y_true, y_pred):
-        ss_res = np.sum((y_true - y_pred)**2)
-        ss_tot = np.sum((y_true - np.mean(y_true))**2)
-        if ss_tot == 0:
-            return 1.0 if ss_res == 0 else 0.0
-        return 1 - (ss_res / ss_tot)
-    
-    def evaluate(self, X_test, y_test):
-        """
-        Evaluates the model on test data and returns the MSE on the original scale.
-        """
-        predictions = self.predict(X_test) 
-        y_test_flat = y_test.flatten()
-        predictions_flat = predictions.flatten()
-        
-        mse = np.mean((predictions_flat - y_test_flat)**2)
-        return mse
